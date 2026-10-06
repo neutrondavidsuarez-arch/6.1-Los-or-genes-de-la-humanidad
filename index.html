@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioLearning - Tema 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init({ publicKey: "3LjnpLaDboHWv0VPY" });
+        })();
+    </script>
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .iframe-container { position: relative; width: 100%; height: 75vh; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        .nav-btn { transition: all 0.3s ease; border-bottom: 3px solid transparent; white-space: nowrap; }
+        .nav-btn:hover { transform: translateY(-2px); }
+        .nav-btn.active { border-color: #10b981; color: #10b981; }
+        @keyframes pulse-dot { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+        .dot-pulse { animation: pulse-dot 1.2s infinite; }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans min-h-screen">
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex flex-col lg:flex-row justify-between items-center gap-4">
+                <div class="text-center lg:text-left">
+                    <h1 class="text-xl font-black text-emerald-600 tracking-tight">UNIDAD 1</h1>
+                    <p class="text-slate-500 font-bold text-xs uppercase">Tema 6.1: Los orígenes de la humanidad</p>
+                </div>
+                
+                <nav class="flex flex-wrap justify-center gap-1 md:gap-4">
+                    <button onclick="prepQuiz('deber', this)" class="nav-btn active px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📚</span> Practica
+                    </button>
+                    <button onclick="prepQuiz('evaluacion', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📝</span> Repaso
+                    </button>
+                    <button onclick="prepQuiz('extra', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📊</span> Evaluación
+                    </button>
+                    <button onclick="showSection('pdf', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>📋</span> Pizarra
+                    </button>
+                    <button onclick="showSection('video', this)" class="nav-btn px-3 py-2 font-bold text-slate-700 flex items-center gap-2">
+                        <span>🎥</span> Video
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <main id="app" class="max-w-5xl mx-auto p-6">
+    </main>
+    <script>
+        const DRIVE_PDF_URL = "https://drive.google.com/file/d/1tPdsfPZVt-oOM-a1YmCbr8oMPMprzbl2/view?usp=sharing";
+        const DRIVE_VIDEO_URL = "https://drive.google.com/file/d/1SIK91sRhpQ3Xs2uipNnDh0MSYUlOl2ux/view?usp=sharing";
+
+        // PRINCIPAL (Práctica + Repaso)
+        const quizData = [
+            { question: 'Teorías del Origen de la Tierra <br> Un estudiante debe explicar cómo se formó el sistema solar según la teoría nebular. ¿Qué plantea esta teoría?', options: ['La Tierra se formó por la acumulación progresiva de polvo cósmico y bombardeo espacial.', 'Un ser divino creó el mundo desde la nada en siete días.', 'El universo se originó por una gran explosión que dispersó materia por el espacio.', 'Una nebulosa en rotación se contrajo, concentrando partículas pesadas en el centro.'], answer: 'Una nebulosa en rotación se contrajo, concentrando partículas pesadas en el centro.', explanation: 'Respuesta correcta: D <br> A) Incorrecta. Describe la teoría de la acreción (acumulación de polvo y bombardeo), no la nebular. <br> B) Incorrecta. Es la teología de la creación (visión religiosa). <br> C) Incorrecta. Es la teoría del Big Bang (origen del universo). <br> D) Correcta. La teoría nebular (Kant-Laplace) plantea que una nebulosa en rotación se contrajo por gravedad, concentrando materia pesada en el centro (formando el Sol) y formando un disco del que surgieron los planetas.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Origen de la Tierra y Teorías Científicas <br> Lea los siguientes enunciados y seleccione la opción que los clasifique correctamente como verdaderos (V) o falsos (F). <br> 1. La teoría del Big Bang sostiene que el universo se originó por una gran explosión. <br> 2. La teoría de Laplace propone que una nebulosa se contrajo por la gravedad y desprendió anillos concéntricos. <br> 3. La teoría de la acreción explica la formación planetaria por la acumulación de polvo cósmico. <br> 4. La teología de la creación fue desarrollada exclusivamente por Charles Darwin.', options: ['V, V, V, F', 'F, V, V, F', 'V, F, F, V', 'F, F, V, V'], answer: 'V, V, V, F', explanation: 'Respuesta correcta: A) V, V, V, F <br> 1. V – El Big Bang describe el origen del universo por una gran explosión/expansión. <br> 2. V – Laplace propuso que una nebulosa se contrajo y desprendió anillos concéntricos que formaron planetas. <br> 3. V – La teoría de la acreción explica la formación de planetas por acumulación de polvo cósmico. <br> 4. F – La teología de la creación es religiosa (San Agustín, Tomás de Aquino); Darwin desarrolló la selección natural.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Estructura Interna de la Tierra <br> Sobre la estructura interna de la Tierra, es correcto afirmar que:', options: ['El núcleo terrestre está compuesto principalmente por silicio y aluminio.', 'El manto es la capa más externa del planeta y forma la corteza terrestre.', 'El núcleo interno es sólido y está compuesto principalmente por hierro y níquel.', 'La litosfera es una capa líquida que se encuentra debajo de la astenosfera.'], answer: 'El núcleo interno es sólido y está compuesto principalmente por hierro y níquel.', explanation: 'Respuesta correcta: C <br> A) Incorrecta. El núcleo es principalmente hierro y níquel; el silicio y aluminio dominan en la corteza. <br> B) Incorrecta. El manto está debajo de la corteza; la corteza es la capa más externa. <br> C) Correcta. El núcleo interno es sólido (hierro-níquel). <br> D) Incorrecta. La litosfera es rígida (corteza + manto superior); la astenosfera es más plástica debajo.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Atmósfera y sus Capas <br> La troposfera es a las nubes y tormentas como la estratosfera es a:', options: ['Las auroras polares y la órbita de satélites.', 'La desintegración de meteoritos y estrellas fugaces.', 'La capa de ozono que filtra la radiación ultravioleta.', 'La dispersión de gases hacia el espacio exterior.'], answer: 'La capa de ozono que filtra la radiación ultravioleta.', explanation: 'Respuesta correcta: C <br> A) Incorrecta. Auroras y satélites están en la termosfera. <br> B) Incorrecta. Desintegración de meteoritos ocurre en la mesosfera. <br> C) Correcta. La estratosfera contiene la capa de ozono que filtra UV. <br> D) Incorrecta. Dispersión de gases ocurre en capas superiores (exosfera).', multi: 'OFF', maxSelect: 1 },
+            { question: 'Capas de la Atmósfera <br> Identifique la opción que NO corresponde a una de las capas de la atmósfera terrestre.', options: ['Troposfera.', 'Estratosfera.', 'Mesosfera.', 'Litosfera.'], answer: 'Litosfera.', explanation: 'Respuesta correcta: D <br> La litosfera es parte de la geosfera (estructura sólida), no de la atmósfera. Troposfera, estratosfera y mesosfera sí son capas atmosféricas.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Formación de Pangea <br> Ordene las palabras para formar una oración correcta sobre la formación de Pangea. <br> Pangea / supercontinente / llamado / toda / terrestre / un / formaba / única / la / masa /.', options: ['Toda la masa terrestre formaba un único supercontinente llamado Pangea.', 'Un único supercontinente llamado Pangea formaba toda la masa terrestre.', 'La masa terrestre formaba un único supercontinente llamado Pangea.', 'Formaba un único supercontinente llamado Pangea toda la masa terrestre.'], answer: 'Toda la masa terrestre formaba un único supercontinente llamado Pangea.', explanation: 'Respuesta correcta: A <br> La oración correcta y natural es: “Toda la masa terrestre formaba un único supercontinente llamado Pangea.” Las demás tienen orden gramatical incorrecto o menos natural.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Teoría de la Deriva Continental <br> Ordene las palabras para formar una oración correcta sobre la teoría de la deriva continental. <br> Wegener / continental / deriva / la / Alfred / teoría / propuso / de / la /.', options: ['Alfred Wegener propuso la teoría de la deriva continental.', 'La teoría de la deriva continental fue propuesta por Alfred Wegener.', 'Propuso Alfred Wegener la teoría de la deriva continental.', 'De la deriva continental, Alfred Wegener propuso la teoría.'], answer: 'Alfred Wegener propuso la teoría de la deriva continental.', explanation: 'Respuesta correcta: A <br> La forma más directa y correcta es: “Alfred Wegener propuso la teoría de la deriva continental.” B también es aceptable gramaticalmente, pero A es la más natural y directa.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Eras Geológicas <br> Durante el Mesozoico, ocurrió un evento que provocó la extinción masiva de los dinosaurios. ¿Cuál fue la causa de esta extinción?', options: ['Una glaciación que cubrió toda la superficie terrestre.', 'Un impacto de origen extraterrestre que alteró el clima.', 'La aparición de los primeros mamíferos que compitieron con ellos.', 'La separación de África y América que cambió las corrientes oceánicas.'], answer: 'Un impacto de origen extraterrestre que alteró el clima.', explanation: 'Respuesta correcta: B <br> La extinción de los dinosaurios (final del Cretácico, Mesozoico) se asocia principalmente al impacto de un asteroide/meteorito que alteró el clima global.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Origen de la Vida y la Tierra <br> Lea el siguiente texto y responda la pregunta. <br> ‘’La Tierra se formó hace aproximadamente 4500 millones de años. Durante su formación, el planeta sufrió un aumento extremo de temperatura. Elementos pesados como el hierro y el uranio se fundieron para conformar el núcleo, mientras que un proceso posterior de enfriamiento dio origen a la corteza y a los primeros continentes.’’ <br> ¿Cuál fue el proceso que permitió la formación de la corteza terrestre?', options: ['El bombardeo espacial constante de meteoritos.', 'El enfriamiento progresivo de la masa incandescente.', 'La condensación del vapor de agua en la atmósfera', 'La acumulación de polvo cósmico y partículas ligeras.'], answer: 'El enfriamiento progresivo de la masa incandescente.', explanation: 'Respuesta correcta: B <br> El texto indica claramente que un proceso posterior de enfriamiento dio origen a la corteza.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Distribución del Agua en el Planeta <br> Según la información sobre la hidrosfera, ¿qué porcentaje del agua del planeta es agua dulce?', options: ['70%', '97.5%', '2.5%', '50%'], answer: '2.5%', explanation: 'Respuesta correcta: C) 2.5% <br> Aproximadamente el 97.5 % es agua salada y solo el 2.5 % es dulce.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Fuentes Históricas <br> Seleccione las dos opciones que corresponden a ejemplos de fuentes primarias para el estudio de la historia. <br> 1. Un manuscrito original escrito por un soldado durante la Primera Guerra Mundial. <br> 2. Un libro de texto que analiza las causas de la Revolución Francesa. <br> 3. Una fotografía tomada durante la construcción del ferrocarril en el siglo XIX. <br> 4. Un documental moderno sobre la vida de los antiguos romanos.', options: ['1 y 2 son correctas.', '1 y 3 son correctas.', '2 y 3 son correctas.', '3 y 4 son correctas.'], answer: '1 y 3 son correctas.', explanation: 'Respuesta correcta: B) 1 y 3 son correctas <br> Fuentes primarias: manuscrito original (1) y fotografía contemporánea al evento (3). Libro de texto y documental moderno son secundarias.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Características del Paleolítico <br> Seleccione las tres opciones que corresponden a características del Paleolítico. <br> 1. Los seres humanos eran nómadas y se desplazaban según las temporadas. <br> 2. La agricultura y la domesticación de animales eran las principales actividades. <br> 3. Las herramientas eran fabricadas principalmente con piedra, hueso y madera. <br> 4. Se desarrolló el arte rupestre con representaciones de animales y escenas de caza. <br> 5. Se construyeron grandes ciudades y monumentos megalíticos.', options: ['1, 2 y 3 son correctas.', '1, 3 y 4 son correctas.', '2, 3 y 5 son correctas.', '3, 4 y 5 son correctas'], answer: '1, 3 y 4 son correctas.', explanation: 'Respuesta correcta: B) 1, 3 y 4 son correctas <br> Características del Paleolítico: nomadismo, herramientas de piedra/hueso/madera y arte rupestre. Agricultura y ciudades son del Neolítico.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Revolución Neolítica <br> Marque la opción que relaciona correctamente una causa con un efecto de la Revolución Neolítica.', options: ['Causa: El desarrollo de la agricultura. Efecto: La transición de sociedades nómadas a sedentarias.', 'Causa: La invención de la escritura. Efecto: La aparición de los primeros homínidos.', 'Causa: El descubrimiento del fuego. Efecto: La formación de los primeros imperios.', 'Causa: La domesticación de animales. Efecto: La extinción de los dinosaurios.'], answer: 'Causa: El desarrollo de la agricultura. Efecto: La transición de sociedades nómadas a sedentarias.', explanation: 'Respuesta correcta: A <br> La agricultura permitió el sedentarismo. Las demás relaciones son incorrectas (escritura no causa homínidos, fuego no causa imperios, domesticación no extinguió dinosaurios).', multi: 'OFF', maxSelect: 1 },
+            { question: 'Conceptos de Historia e Historiografía <br> Relacione los siguientes conceptos con sus respectivas definiciones <br> Conceptos: <br> 1. Historia (como narración) <br> 2. Historia (como disciplina) <br> 3. Historiografía <br> Definiciones: <br> a) Estudio académico de hechos significativos con análisis riguroso de fuentes. <br> b) Narración de todos los eventos del pasado, abarcando el diario vivir humano. <br> c) Estudio de cómo se construye e interpreta la historia, analizando el contexto del historiador. <br> d) Conjunto de leyes que rigen la investigación histórica.', options: ['1a, 2b, 3c', '1c, 2a, 3b', '1b, 2c, 3a', '1b, 2a, 3c'], answer: '1b, 2a, 3c', explanation: 'Respuesta correcta: D) 1b, 2a, 3c <br> 1. Historia como narración = b (relato de eventos). <br> 2. Historia como disciplina = a (estudio académico riguroso). <br> 3. Historiografía = c (estudio de cómo se escribe e interpreta la historia).', multi: 'OFF', maxSelect: 1 },
+            { question: 'Evolución de los Homínidos <br> Un paleontólogo descubre un fósil con una capacidad craneal de 800 cm³, acompañado de herramientas de piedra rudimentarias, en un yacimiento africano de 2.2 millones de años. ¿A qué especie pertenece?', options: ['Homo erectus.', 'Homo habilis.', 'Homo ergaster.', 'Australopithecus afarensis.'], answer: 'Homo habilis.', explanation: 'Respuesta correcta: B) Homo habilis <br> Capacidad craneal ~500-800 cm³, herramientas rudimentarias (Oldowan) y edad ~2.2 Ma coinciden con Homo habilis.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Características del Homo erectus <br> Sobre el Homo erectus, es INCORRECTO afirmar que:', options: ['Fue la primera especie en domesticar el fuego.', 'Colonizó Asia y habitó allí hasta hace 300.000 años.', 'Desarrolló un lenguaje articulado para organizar estructuras sociales.', 'Fue la primera especie del género Homo en salir de África.'], answer: 'Desarrolló un lenguaje articulado para organizar estructuras sociales.', explanation: 'Respuesta correcta: C (es lo INCORRECTO) <br> Homo erectus dominó el fuego, salió de África y colonizó Asia, pero no hay evidencia clara de lenguaje articulado complejo como el de H. sapiens.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Edad de los Metales <br> Lea los siguientes enunciados sobre la Edad de los Metales y seleccione la opción que los clasifique correctamente como verdaderos (V) o falsos (F). <br> 1. La Edad de los Metales siguió a la Edad de Piedra y abarcó del 5000 al 1000 a.C. <br> 2. La primera fase de la Edad de los Metales fue la Edad del Bronce. <br> 3. La aleación de cobre con estaño produjo el bronce, un material más duro y duradero. <br> 4. El hierro fue el último metal en ser dominado, permitiendo la producción en masa.', options: ['V, F, V, V', 'F, V, V, F', 'V, V, F, V', 'F, F, V, V'], answer: 'V, F, V, V', explanation: 'Respuesta correcta: A) V, F, V, V <br> V – Siguió a la Edad de Piedra (~5000-1000 a.C. aproximado). <br> F – La primera fase fue la Edad del Cobre (Calcolítico), luego Bronce y Hierro. <br> V – Bronce = cobre + estaño. <br> V – El hierro fue el último en dominarse.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Características del Neolítico <br> Según la información sobre el Neolítico, ¿cuál fue la principal transformación que ocurrió en este período?', options: ['El desarrollo de herramientas de piedra para la caza.', 'La aparición de los primeros homínidos en África.', 'La transición de sociedades nómadas a comunidades sedentarias.', 'La invención de la escritura cuneiforme.'], answer: 'La transición de sociedades nómadas a comunidades sedentarias.', explanation: 'Respuesta correcta: C <br> La principal transformación del Neolítico fue el paso de sociedades nómadas a sedentarias (Revolución Neolítica).', multi: 'OFF', maxSelect: 1 },
+            { question: 'Cronoespecies <br> Lea el siguiente texto y responda la pregunta. <br> ´´Cuando se consideraba que el proceso evolutivo de la humanidad fue lineal, se puso en boga la teoría de ´eslabón perdido´; pero, hoy en día se entiende que no existió ningún eslabón; sino, cronoespecies, que hace referencia a la convivencia de diferentes formas evolutivas del mismo o diferente género en los diferentes periodos.´´ <br> ¿Qué concepto reemplazó a la teoría del "eslabón perdido"?', options: ['La teoría de la selección natural.', 'El concepto de cronoespecies.', 'La teoría del Big Bang.', 'El concepto de deriva continental.'], answer: 'El concepto de cronoespecies.', explanation: 'Respuesta correcta: B <br> El texto indica explícitamente que el concepto de cronoespecies reemplazó a la idea del ´´eslabón perdido´´.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Características del Australopithecus <br> El Australopithecus es considerado un antepasado del género Homo. ¿Cuál de las siguientes características corresponde a esta especie?', options: ['Tenía un lenguaje articulado y estructura social compleja.', 'Colonizó Asia y Europa.', 'Fabricaba herramientas de piedra avanzadas.', 'Era bípedo facultativo y tenía aspecto simiesco.'], answer: 'Era bípedo facultativo y tenía aspecto simiesco.', explanation: 'Respuesta correcta: D <br> Australopithecus era bípedo facultativo con aspecto simiesco. No tenía lenguaje articulado, no colonizó Eurasia ni fabricaba herramientas avanzadas.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Especies del Género Homo <br> Seleccione dos opciones que correspondan a especies del género Homo que coexistieron en el tiempo. <br> 1. Homo habilis y Homo rudolfensis. <br> 2. Homo sapiens y Homo neanderthalensis. <br> 3. Australopithecus afarensis y Homo erectus. <br> 4. Homo ergaster y Homo antecessor.', options: ['1 y 2 son correctas.', '1 y 3 son correctas.', '2 y 4 son correctas.', '3 y 4 son correctas.'], answer: '1 y 2 son correctas.', explanation: 'Respuesta correcta: A) 1 y 2 son correctas <br> H. habilis y H. rudolfensis coexistieron; H. sapiens y H. neanderthalensis también. Australopithecus afarensis es mucho más antiguo que H. erectus.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Características del Homo sapiens <br> Seleccione las tres opciones que corresponden a características del Homo sapiens. <br> 1. Apareció en África hace aproximadamente 315.000 a 100.000 años. <br> 2. Fue la primera especie en domesticar el fuego. <br> 3. Desarrolló manifestaciones culturales y expresiones de racionalidad. <br> 4. Colonizó casi todo el mundo y extinguió a otras especies de Homo. <br> 5. Tenía una capacidad craneal de 800 cm<sup>3</sup> .', options: ['1, 2 y 3 son correctas.', '2, 3 y 5 son correctas.', '1, 3 y 4 son correctas.', '3, 4 y 5 son correctas.'], answer: '1, 3 y 4 son correctas.', explanation: 'Respuesta correcta: C) 1, 3 y 4 son correctas <br> H. sapiens aparece en África (~300-100 ka), desarrolló cultura y racionalidad, colonizó el mundo y contribuyó a la extinción de otras especies de Homo. No fue el primero en domesticar el fuego ni tenía solo 800 cm³ de capacidad craneal.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Evolución del Género Homo <br> Marque la opción que relaciona correctamente una causa con un efecto en la evolución del género Homo.', options: ['Causa: El Homo ergaster salió de África. Efecto: Colonizó Europa y Asia, dando origen a nuevas especies.', 'Causa: El dominio del fuego. Efecto: El Australopithecus se volvió bípedo.', 'Causa: El desarrollo de herramientas. Efecto: El Homo sapiens se extinguió.', 'Causa: La glaciación. Efecto: El Homo habilis desarrolló el lenguaje articulado.'], answer: 'Causa: El Homo ergaster salió de África. Efecto: Colonizó Europa y Asia, dando origen a nuevas especies.', explanation: 'Respuesta correcta: A <br> Homo ergaster salió de África y dio origen a formas en Eurasia (H. erectus, etc.). Las demás relaciones son falsas.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Capas de la Atmósfera <br> Relacione las siguientes capas de la atmósfera con sus respectivas características. <br> Capas: <br> 1. Troposfera <br> 2. Estratosfera <br> 3. Termosfera <br> Características: <br> a) Alberga la capa de ozono que filtra la radiación ultravioleta. <br> b) Ocurren las lluvias, tormentas y contiene el 75% de la masa gaseosa. <br> c) Se generan las auroras polares y orbitan satélites. <br> d) Es la capa más fría, donde se desintegran los meteoritos.', options: ['1b, 2a, 3c', '1a, 2b, 3c', '1c, 2a, 3b', '1b, 2c, 3a'], answer: '1b, 2a, 3c', explanation: 'Respuesta correcta: A) 1b, 2a, 3c <br> Troposfera: lluvias, tormentas, 75 % de la masa. <br> Estratosfera: capa de ozono. <br> Termosfera: auroras y satélites.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Eras Geológicas <br> Un geólogo está estudiando una capa rocosa que contiene fósiles de dinosaurios y evidencia de un impacto extraterrestre. ¿A qué era geológica corresponde este hallazgo?', options: ['Precámbrico.', 'Paleozoico.', 'Mesozoico.', 'Cenozoico.'], answer: 'Mesozoico.', explanation: 'Respuesta correcta: C) Mesozoico <br> Dinosaurios + evidencia de impacto = final del Cretácico (Mesozoico).', multi: 'OFF', maxSelect: 1 },
+            { question: 'Características del Paleolítico Inferior <br> Sobre el Paleolítico Inferior, es incorrecto afirmar que:', options: ['La caza, la pesca y la recolección eran actividades primordiales.', 'Se fabricaban armas y utensilios con piedra, huesos y marfil.', 'Los seres humanos ya practicaban la agricultura y la ganadería.', 'Hombres y mujeres desempeñaban roles cruciales para la supervivencia.'], answer: 'Los seres humanos ya practicaban la agricultura y la ganadería.', explanation: 'Respuesta correcta: C (es lo INCORRECTO) <br> En el Paleolítico Inferior no había agricultura ni ganadería (esas son del Neolítico).', multi: 'OFF', maxSelect: 1 },
+            { question: 'La Prehistoria <br> Lea los siguientes enunciados sobre la Prehistoria y seleccione la opción que los clasifique correctamente como verdaderos (V) o falsos (F). <br> 1. La Prehistoria abarca desde la aparición de los primeros homínidos hasta la invención de la escritura. <br> 2. Durante la Prehistoria, los humanos aprendieron a controlar el fuego y eran nómadas. <br> 3. La Edad de Piedra se divide en Paleolítico, Mesolítico y Neolítico. <br> 4. La Edad de los Metales comenzó con la Edad del Hierro.', options: ['F, F, V, V', 'F, V, V, F', 'V, F, F, V', 'V, V, V, F'], answer: 'V, V, V, F', explanation: 'Respuesta correcta: D) V, V, V, F <br> 1-3 son verdaderos. 4 es falso: la Edad de los Metales comenzó con el Cobre, no con el Hierro.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Manifestaciones Culturales <br> ¿Qué evidencia indica que el género Homo desarrolló actividad racional?', options: ['La capacidad craneal de 800 cm<sup>3</sup>.', 'El dominio del fuego y la cocción de alimentos.', 'La fabricación de herramientas y técnicas de defensa.', 'El desplazamiento bípedo y la postura erguida.'], answer: 'La fabricación de herramientas y técnicas de defensa.', explanation: 'Respuesta correcta: C <br> La fabricación de herramientas y técnicas de defensa son evidencia clara de actividad racional.', multi: 'OFF', maxSelect: 1 },
+            { question: 'La Hidrosfera <br> Lea el siguiente texto y responda la pregunta. <br> "La hidrosfera abarca todo el sistema de agua del planeta, ocupando el 70% de la superficie terrestre. El agua salada representa el 97.5% de toda el agua, concentrada en océanos y mares. El agua dulce es apenas el 2.5% restante." <br> ¿Dónde se encuentra la mayor parte del agua dulce del planeta?', options: ['En ríos y lagos.', 'En acuíferos subterráneos.', 'En glaciares y casquetes polares.', 'En la atmósfera como vapor de agua.'], answer: 'En glaciares y casquetes polares.', explanation: 'Respuesta correcta: C <br> La mayor parte del agua dulce está en glaciares y casquetes polares (~68-70 % del agua dulce).', multi: 'OFF', maxSelect: 1 },
+            { question: 'Teoría de la Acreción <br> La teoría de la acreción, propuesta por Otto Schimdl, explica la formación planetaria como:', options: ['El resultado de la explosión de una supernova.', 'La acumulación progresiva de polvo cósmico y bombardeo espacial.', 'La contracción de una nebulosa por la fuerza de gravedad.', 'La creación divina a partir de la nada.'], answer: 'La acumulación progresiva de polvo cósmico y bombardeo espacial.', explanation: 'Respuesta correcta: B <br> La teoría de la acreción (Otto Schmidt) explica la formación por acumulación progresiva de polvo cósmico y bombardeo.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Características del Mesolítico <br> Seleccione las dos opciones que corresponden a características del período Mesolítico. <br> 1. Fue una época de transición entre el Paleolítico y el Neolítico. <br> 2. Se desarrollaron herramientas más pequeñas y sofisticadas. <br> 3. Se inició la construcción de grandes monumentos megalíticos. <br> 4. La agricultura se convirtió en la actividad principal.', options: ['1 y 2 son correctas.', '1 y 3 son correctas.', '2 y 4 son correctas.', '3 y 4 son correctas.'], answer: '1 y 2 son correctas.', explanation: 'Respuesta correcta: A) 1 y 2 son correctas <br> El Mesolítico es de transición y se caracterizó por herramientas más pequeñas y sofisticadas (microlitos). Monumentos y agricultura plena son del Neolítico.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Características del Homo ergaster <br> Seleccione las tres opciones que corresponden a características del Homo ergaster. <br> 1. Fue la primera especie en salir de África. <br> 2. Colonizó Europa y dio origen al Homo antecessor. <br> 3. Colonizó Asia y dio origen al Homo erectus. <br> 4. Tenía una capacidad craneal de 800 cm³. <br> 5. Fue la primera en domesticar el fuego.', options: ['3, 4 y 5 son correctas.', '1, 2 y 4 son correctas.', '2, 3 y 5 son correctas.', '1, 2 y 3 son correctas.'], answer: '1, 2 y 3 son correctas.', explanation: 'Respuesta correcta: D) 1, 2 y 3 son correctas <br> Homo ergaster fue de las primeras en salir de África; se relaciona con formas europeas (H. antecessor) y asiáticas (H. erectus). Capacidad craneal mayor que 800 cm<sup>3</sup> y el dominio del fuego se asocia más a H. erectus/ergaster, pero las opciones 1-3 son las más aceptadas.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Formación de la Tierra <br> Marque la opción que relaciona correctamente una causa con un efecto en la formación de la Tierra.', options: ['Causa: El aumento extremo de temperatura. Efecto: La fusión de elementos pesados como el hierro para formar el núcleo.', 'Causa: El enfriamiento de la Tierra. Efecto: La explosión que originó el Big Bang.', 'Causa: La condensación del vapor de agua. Efecto: La formación de la capa de ozono.', 'Causa: El movimiento de placas tectónicas. Efecto: La creación de la atmósfera primitiva.'], answer: 'Causa: El aumento extremo de temperatura. Efecto: La fusión de elementos pesados como el hierro para formar el núcleo.', explanation: 'Respuesta correcta: A <br> El aumento de temperatura permitió la fusión de elementos pesados que formaron el núcleo.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Ejercicio 34: Eras Geológicas <br> Relacione las siguientes eras geológicas con sus respectivas características. <br> Eras: <br> 1. Precámbrico <br> 2. Paleozoico <br> 3. Cenozoico <br> Características: <br> a) Formación de la corteza terrestre, Pangea y el primer océano. <br> b) Diversificación de mamíferos y aparición de los primeros homínidos. <br> c) Transición de vida marina a terrestre y aparición de vertebrados. <br> d) Hegemonía de los dinosaurios y su extinción por impacto extraterrestre.', options: ['1b, 2c, 3a', '1a, 2b, 3c', '1c, 2a, 3b', '1a, 2c, 3b'], answer: '1a, 2c, 3b', explanation: 'Respuesta correcta: D) 1a, 2c, 3b <br> * Precámbrico: formación de corteza, Pangea y océanos. <br> * Paleozoico: transición de vida marina a terrestre y vertebrados. <br> * Cenozoico: diversificación de mamíferos y primeros homínidos.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Litosfera y Placas Tectónicas <br> Un estudiante está estudiando la dinámica terrestre y aprende que el movimiento de las placas tectónicas es impulsado por corrientes de convección. ¿Qué capa terrestre es responsable de este movimiento?', options: ['La litosfera.', 'La astenosfera.', 'El núcleo interno.', 'La corteza continental.'], answer: 'La astenosfera.', explanation: 'Respuesta correcta: B) La astenosfera <br> Las corrientes de convección en la astenosfera impulsan el movimiento de las placas de la litosfera.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Características del Neolítico <br> Sobre el Neolítico, es INCORRECTO afirmar que:', options: ['Se produjo la transición a sociedades sedentarias.', 'Se desarrollaron técnicas agrícolas como la rotación de cultivos.', 'Los seres humanos continuaron siendo exclusivamente nómadas.', 'Se construyeron estructuras permanentes y monumentos megalíticos.'], answer: 'Los seres humanos continuaron siendo exclusivamente nómadas.', explanation: 'Respuesta correcta: C (es lo INCORRECTO) <br> En el Neolítico los humanos dejaron de ser exclusivamente nómadas y se volvieron sedentarios.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Teorías sobre el Origen del Sistema Solar <br> Lea los siguientes enunciados sobre las teorías del origen del sistema solar y seleccione la opción que los clasifique correctamente como verdaderos (V) o falsos (F). <br> 1. La teoría del Big Bang fue propuesta por George Gamow en 1948. <br> 2. La teoría de Laplace fue desarrollada por Immanuel Kant en 1755. <br> 3. La teoría de la acreción explica la formación planetaria por acumulación de polvo cósmico. <br> 4. La teología de la creación fue planteada por San Agustín y Santo Tomás de Aquino.', options: ['V, F, V, V', 'F, V, V, F', 'V, V, F, V', 'F, F, V, V'], answer: 'V, F, V, V', explanation: 'Respuesta correcta: A) V, F, V, V <br> 1. V – Gamow desarrolló aspectos del Big Bang (aunque la idea inicial es de Lemaître). <br> 2. F – Laplace desarrolló la teoría nebular; Kant la propuso antes. <br> 3. V – Acreción = acumulación de polvo. <br> 4. V – San Agustín y Tomás de Aquino desarrollaron la teología de la creación.', multi: 'OFF', maxSelect: 1 },
+            { question: 'La Biosfera <br> La biosfera se define como:', options: ['La capa de gases que rodea el planeta.', 'El ecosistema global que se extiende desde el fondo oceánico hasta 10 km sobre el nivel del mar.', 'La capa sólida externa de la Tierra.', 'El conjunto de aguas del planeta, incluyendo océanos y ríos.'], answer: 'El ecosistema global que se extiende desde el fondo oceánico hasta 10 km sobre el nivel del mar.', explanation: 'Respuesta correcta: B <br> La biosfera es el ecosistema global que abarca desde el fondo oceánico hasta ~10 km sobre el nivel del mar.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Edad de los Metales <br> Lea el siguiente texto y responda la pregunta. <br> "La Edad de los Metales se divide en tres fases: Edad del Cobre, Edad del Bronce y Edad del Hierro. Durante la Edad del Bronce, la aleación de cobre con estaño produjo un material más duro y duradero, permitiendo la fabricación de herramientas y armas más eficientes." <br> ¿Qué metal se combinó con el cobre para producir el bronce?', options: ['El hierro.', 'El estaño.', 'El oro.', 'La plata.'], answer: 'El estaño.', explanation: 'Respuesta correcta: B) El estaño <br> Bronce = cobre + estaño.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Características del Homo neanderthalensis <br> El Homo neanderthalensis compartió época con el Homo sapiens. ¿Qué evidencia existe de su interacción?', options: ['No hubo interacción entre ambas especies.', 'El Homo sapiens cazó al Homo neanderthalensis hasta su extinción.', 'Existen humanos actuales con características genéticas de neandertales.', 'El Homo neanderthalensis fue el antepasado directo del Homo sapiens.'], answer: 'Existen humanos actuales con características genéticas de neandertales.', explanation: 'Respuesta correcta: C <br> Existe evidencia genética de hibridación: muchos humanos no africanos actuales tienen ADN neandertal.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Capas de la Tierra <br> Seleccione las dos opciones que corresponden a capas de la geosfera (estructura interna de la Tierra). <br> 1. Corteza. <br> 2. Atmósfera. <br> 3. Manto. <br> 4. Biosfera.', options: ['1 y 2 son correctas.', '1 y 3 son correctas.', '2 y 4 son correctas.', '3 y 4 son correctas.'], answer: '1 y 3 son correctas.', explanation: 'Respuesta correcta: B) 1 y 3 son correctas <br> Corteza y manto forman parte de la geosfera. Atmósfera y biosfera son capas distintas.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Características del Paleolítico Superior <br> Seleccione las tres opciones que corresponden a características del Paleolítico Superior. <br> 1. Se agregó el uso de madera y hueso a las herramientas. <br> 2. El arte rupestre tenía un sentido mágico y representaba animales y caza. <br> 3. Se desarrolló la agricultura y la ganadería como base económica. <br> 4. Los instrumentos estaban más desarrollados para cazar animales de gran tamaño. <br> 5. Se construyeron las primeras ciudades amuralladas.', options: ['1, 2 y 3 son correctas.', '1, 2 y 4 son correctas.', '2, 3 y 5 son correctas.', '3, 4 y 5 son correctas.'], answer: '1, 2 y 4 son correctas.', explanation: 'Respuesta correcta: B) 1, 2 y 4 son correctas <br> Paleolítico Superior: uso de madera/hueso, arte rupestre mágico y herramientas más desarrolladas para caza mayor. Agricultura y ciudades son posteriores.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Formación de Pangea <br> Marque la opción que relaciona correctamente una causa con un efecto en la formación y fragmentación de Pangea.', options: ['Causa: El movimiento de las placas tectónicas. Efecto: La fragmentación de Pangea en continentes separados.', 'Causa: El enfriamiento de la Tierra. Efecto: La formación de Pangea.', 'Causa: El impacto de un meteorito. Efecto: La separación de África y América.', 'Causa: La erupción de volcanes. Efecto: La formación de la capa de ozono.'], answer: 'Causa: El movimiento de las placas tectónicas. Efecto: La fragmentación de Pangea en continentes separados.', explanation: 'Respuesta correcta: A <br> El movimiento de las placas tectónicas provocó la fragmentación de Pangea.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Periodos de la Prehistoria <br> Enunciado: Relacione los siguientes períodos de la Prehistoria con sus respectivas características. <br> Períodos: <br> 1. Paleolítico <br> 2. Mesolítico <br> 3. Neolítico <br> Características: <br> a) Transición entre el Paleolítico y el Neolítico con herramientas más sofisticadas. <br> b) Revolución agrícola y desarrollo del sedentarismo. <br> c) Sociedades nómadas, herramientas de piedra y arte rupestre. <br> d) Desarrollo de la metalurgia y la fundición de metales.', options: ['1c, 2b, 3a', '1a, 2b, 3c', '1b, 2c, 3a', '1c, 2a, 3b'], answer: '1c, 2a, 3b', explanation: 'Respuesta correcta: D) 1c, 2a, 3b <br> Paleolítico: nómadas, piedra y arte rupestre. <br> Mesolítico: transición con herramientas más sofisticadas. <br> Neolítico: revolución agrícola y sedentarismo.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Capas de la Atmósfera <br> Un avión comercial vuela a una altura de 10 km, donde se encuentran las nubes y las tormentas. ¿En qué capa de la atmósfera se encuentra?', options: ['Estratosfera.', 'Troposfera.', 'Mesosfera.', 'Termosfera.'], answer: 'Troposfera.', explanation: 'Respuesta correcta: B) Troposfera <br> A 10 km (nubes y tormentas) se está en la troposfera.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Características de la Historiografía <br> Sobre la historiografía, es incorrecto afirmar que:', options: ['Es el estudio de cómo se construye e interpreta la historia.', 'Analiza el contexto y las interpretaciones de los historiadores.', 'Se enfoca únicamente en la narración de eventos del pasado.', 'Busca un tratamiento riguroso de las fuentes históricas.'], answer: 'Se enfoca únicamente en la narración de eventos del pasado.', explanation: 'Respuesta correcta: C (es lo INCORRECTO) <br> La historiografía no se enfoca únicamente en narrar eventos; estudia cómo se construye e interpreta la historia.', multi: 'OFF', maxSelect: 1 },
+            { question: 'El Cenozoico <br> Lea los siguientes enunciados sobre la era Cenozoica y seleccione la opción que los clasifique correctamente como verdaderos (V) o falsos (F). <br> 1. El Cenozoico abarca desde hace 66 millones de años hasta el presente. <br> 2. Durante el Cenozoico ocurrió la formación de grandes cadenas montañosas. <br> 3. El Cenozoico es conocido como la era de los dinosaurios. <br> 4. Durante el Cenozoico aparecieron los primeros homínidos.', options: ['V, V, F, V', 'F, V, V, F', 'V, F, F, V', 'F, F, V, V'], answer: 'V, V, F, V', explanation: 'Respuesta correcta: A) V, V, F, V <br> 1. V – Desde hace ~66 Ma hasta el presente. <br> 2. V – Formación de grandes cadenas montañosas. <br> 3. F – La era de los dinosaurios es el Mesozoico. <br> 4. V – Aparecieron los primeros homínidos.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Teología de la Creación <br> La teología de la creación en la tradición cristiana fue desarrollada por:', options: ['Darwin y Wallace.', 'San Agustín y Tomás de Aquino.', 'Kant y Laplace.', 'Wegener y Schimdl.'], answer: 'San Agustín y Tomás de Aquino.', explanation: 'Respuesta correcta: B <br> San Agustín y Tomás de Aquino desarrollaron la teología de la creación en la tradición cristiana.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Evolución Humana <br> Ordene las palabras para formar una oración correcta sobre la evolución humana. <br> Homo / evolucionó / Australopithecus / el / a / partir / género / del /.', options: ['Del Australopithecus, el género Homo evolucionó a partir', 'A partir del Australopithecus, el género Homo evolucionó.', 'Evolucionó el género Homo a partir del Australopithecus.', 'El género Homo evolucionó a partir del Australopithecus.'], answer: 'El género Homo evolucionó a partir del Australopithecus.', explanation: 'Respuesta correcta: D <br> La oración correcta y natural es: “El género Homo evolucionó a partir del Australopithecus.”', multi: 'OFF', maxSelect: 1 },
+            { question: 'La Prehistoria <br> Lea el siguiente texto y responda la pregunta. <br> "La Prehistoria, que abarca desde la aparición de los primeros homínidos hasta la invención de la escritura, es un vasto periodo caracterizado por una serie de importantes avances en la evolución y desarrollo humano. Comprende desde la aparición de los primeros homínidos, unos 2.500.000 años hasta alrededor de los 3000 años a.C." <br> ¿Cuál es el evento que marca el fin de la Prehistoria?', options: ['La aparición de los primeros homínidos.', 'La Revolución Neolítica.', 'El dominio del fuego.', 'La invención de la escritura.'], answer: 'La invención de la escritura.', explanation: 'Respuesta correcta: D <br> El fin de la Prehistoria se marca convencionalmente con la invención de la escritura (~3000 a.C.).', multi: 'OFF', maxSelect: 1 },
+        ];
+
+        // EVALUACIÓN (16 preguntas)
+        const quizDataExtra = [
+            { question: 'Relaciona los siguientes términos con su definición correcta: <br> <img src="https://i.ibb.co/ZRJBxJBR/Captura-de-pantalla-2026-10-06-154620.png" alt="Descripción de la imagen" width="480" height="200">', options: ['A4; B1; C2; D3', 'A1; B2; C4; D3', 'A4; B3; C2; D1', 'A3; B1; C2; D4'], answer: 'A4; B1; C2; D3', explanation: 'Australopithecus fue uno de los primeros homínidos bípedos, Homo habilis usaba herramientas de piedra, Homo erectus salió de África, y Homo sapiens desarrolló el lenguaje y habilidades cognitivas avanzadas.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál de los siguientes es un factor clave en la evolución del cerebro humano?', options: ['La agricultura.', 'La fabricación de herramientas.', 'El consumo de carne.', 'El bipedismo.'], answer: 'El consumo de carne.', explanation: 'El consumo de carne jugó un papel crucial en la evolución del cerebro humano. La carne es una fuente rica en proteínas y nutrientes esenciales como los ácidos grasos omega-3, que son fundamentales para el desarrollo cerebral. Además, una dieta rica en calorías permitía que los primeros humanos dedicaran más energía al crecimiento del cerebro, lo que facilitó la expansión y complejidad de este órgano a lo largo de la evolución.', multi: 'OFF', maxSelect: 1 },
+            { question: 'La __________ se refiere al periodo anterior a la invención de la escritura, donde las sociedades eran principalmente nómadas y vivían de la caza y la recolección.', options: ['Edad Antigua', 'Prehistoria', 'Edad Media', 'Edad Moderna'], answer: 'Prehistoria', explanation: 'La Prehistoria se refiere al periodo anterior a la invención de la escritura, que comenzó hace unos 5,000 años. Durante la Prehistoria, las sociedades humanas eran principalmente nómadas y se dedicaban a la caza, la pesca y la recolección de alimentos. Este periodo abarca varias etapas, como el Paleolítico, el Mesolítico y el Neolítico, antes del desarrollo de la agricultura y la vida sedentaria..', multi: 'OFF', maxSelect: 1 },
+            { question: 'Ordena los siguientes homínidos en la secuencia correcta de aparición: <br> 1) Homo sapiens <br> 2) Homo habilis <br> 3) Australopithecus <br> 4) Homo erectus ', options: ['3, 2, 4, 1', '2, 3, 1, 4', '3, 1, 2, 4', '1, 3, 2, 4'], answer: '3, 2, 4, 1', explanation: 'Australopithecus: Apareció hace aproximadamente 4 millones de años y es considerado uno de los primeros ancestros de los humanos. <br> Homo habilis: Surgió hace unos 2,4 millones de años y se destaca por el uso temprano de herramientas de piedra. <br> Homo erectus: Apareció hace alrededor de 1,9 millones de años y fue uno de los primeros en salir de África. <br> Homo sapiens: Surgió hace aproximadamente 300,000 años y es la especie humana actual.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál fue el cambio principal en la anatomía que permitió a los homínidos caminar erguidos?', options: ['La reducción del tamaño de los dientes.', 'La modificación de la pelvis y la columna vertebral.', 'El crecimiento del cráneo.', 'La aparición de la capacidad de fabricar herramientas.'], answer: 'La modificación de la pelvis y la columna vertebral.', explanation: 'El cambio principal en la anatomía que permitió a los homínidos caminar erguidos fue la modificación de la pelvis y la columna vertebral. La pelvis se ensanchó y adoptó una forma más corta y ancha para sostener mejor el peso del cuerpo al estar de pie, mientras que la columna vertebral desarrolló una curvatura que ayudaba a mantener el equilibrio. Estos cambios estructurales permitieron una locomoción bípeda más eficiente.', multi: 'OFF', maxSelect: 1 },
+            { question: 'La historia se diferencia de la prehistoria porque: <br> 1. La historia se estudia a través de fuentes escritas. <br> 2. La prehistoria abarca únicamente las culturas cazadoras-recolectoras.', options: ['Solo 1 es correcta.', 'Solo 2 es correcta.', 'Ambas son correctas.', 'Ninguna es correcta.'], answer: 'Solo 1 es correcta.', explanation: 'La historia se diferencia de la prehistoria principalmente en que la historia se estudia a través de fuentes escritas, lo que marca el inicio de los registros históricos. La prehistoria, en cambio, abarca el periodo anterior a la invención de la escritura y se estudia mediante evidencia arqueológica y fósil.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Ordena los siguientes logros en la evolución humana según su importancia en el desarrollo de la civilización: <br> 1) Uso del fuego <br> 2) Desarrollo del lenguaje <br> 3) Fabricación de herramientas <br> 4) Establecimiento de asentamientos permanentes ', options: ['1, 3, 2, 4', '3, 2, 1, 4', '4, 2, 1, 3', '3, 1, 2, 4'], answer: '3, 1, 2, 4', explanation: 'Fabricación de herramientas (3): Fue uno de los primeros logros que permitió a los primeros homínidos mejorar su capacidad para cazar, recolectar y protegerse. <br> Uso del fuego (1): Fue un avance significativo en la dieta, seguridad y socialización de los humanos, permitió cocinar alimentos, calentarse y ahuyentar depredadores. <br> Desarrollo del lenguaje (2): Facilitó la comunicación compleja y la transmisión de conocimientos, siendo crucial para la cooperación social y el aprendizaje cultural. <br> Establecimiento de asentamientos permanentes (4): Fue un paso esencial hacia la civilización, permitiendo el desarrollo de la agricultura, la creación de comunidades más grandes y la especialización en diferentes oficios.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Relaciona los siguientes términos con su definición: <br> <img src="https://i.ibb.co/S4p7NLHN/Captura-de-pantalla-2026-10-06-162854.png" alt="Descripción de la imagen" width="500" height="200">', options: ['A4; B1; C2; D3', 'A1; B2; C4; D3', 'A2; B2; C4; D3', 'A3; B1; C2; D4'], answer: 'A2; B2; C4; D3', explanation: 'Cada disciplina tiene su enfoque específico: la arqueología examina objetos y estructuras antiguos, la paleontología se centra en fósiles, la antropología estudia los aspectos culturales y físicos de la humanidad, y la historiografía analiza cómo se ha escrito la historia a lo largo del tiempo..', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál es la característica que distingue a los homínidos de otros primates? <br> a) La capacidad de fabricar herramientas. <br> b) La bipedestación. <br> c) La comunicación compleja. <br> d) El uso del fuego.', options: ['La capacidad de fabricar herramientas.', 'La bipedestación.', 'La comunicación compleja.', 'El uso del fuego.'], answer: 'La bipedestación.', explanation: 'La bipedestación, o la capacidad de caminar erguido sobre dos piernas, es la característica principal que distingue a los homínidos de otros primates. Este rasgo permitió a los homínidos moverse de manera más eficiente en tierra firme y liberar las manos para otros usos, como la fabricación de herramientas y la manipulación de objetos.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Selecciona todas las características del Homo erectus: <br> A) Uso de herramientas más avanzadas que sus predecesores. <br> B) Capacidad de fabricar armas complejas. <br> C) Dominio del fuego. <br> D) Desarrollo del lenguaje moderno.', options: ['B; C', 'A; D', 'A; C', 'D; B'], answer: 'A; C', explanation: 'A) Uso de herramientas más avanzadas que sus predecesores: El Homo erectus utilizó herramientas de piedra más sofisticadas, incluyendo bifaces, que representaron un avance significativo en la tecnología de herramientas. <br> C) Dominio del fuego: Esta especie fue una de las primeras en controlar el fuego, lo que tuvo un gran impacto en su dieta, seguridad y vida social.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuáles de los siguientes cambios se produjeron durante el Neolítico? Selecciona todas las respuestas correctas. <br> 1) Desarrollo de la agricultura. <br> 2) Domesticación de animales. <br> 3) Uso del fuego por primera vez. <br> 4) Aparición de la metalurgia.', options: ['1 y 3', '1 y 2', '2 y 3', '2 y 4'], answer: '1 y 2', explanation: 'Desarrollo de la agricultura: Este periodo se caracteriza por la transición de sociedades nómadas cazadoras-recolectoras a sociedades sedentarias dedicadas a la agricultura, lo que permitió el asentamiento permanente. <br> Domesticación de animales: Durante el Neolítico, se comenzaron a domesticar animales como ovejas, cabras y cerdos, lo que proporcionó fuentes de alimento, pieles y trabajo..', multi: 'OFF', maxSelect: 1 },
+            { question: 'Relaciona los siguientes homínidos con una característica relevante: <br> <img src="https://i.ibb.co/4Zr17Zzs/Captura-de-pantalla-2026-10-06-163903.png" alt="Descripción de la imagen" width="500" height="200">', options: ['A1; B2; C3; D4', 'A1; B3; C4; D2', 'A2; B1; C4; D3', 'A3; B4; C1; D2'], answer: 'A2; B1; C4; D3', explanation: 'Homo habilis es conocido como uno de los primeros homínidos en fabricar herramientas de piedra simples. <br> Homo neanderthalensis vivió en Europa y Asia y se extinguió hace aproximadamente 40,000 años, coincidiendo con la llegada de los Homo sapiens a Europa. <br> Homo sapiens es la especie moderna que desarrolló expresiones culturales complejas, como el arte rupestre y el lenguaje avanzado. <br> Homo erectus fue un homínido que se destacó por su capacidad para controlar el fuego y su migración desde África hacia otras partes del mundo.', multi: 'OFF', maxSelect: 1 },
+            { question: '¿Cuál es el objetivo principal de la historiografía?', options: ['Registrar eventos actuales para las futuras generaciones.', 'Estudiar e interpretar las fuentes históricas para entender el pasado.', 'Conservar los sitios arqueológicos más importantes.', 'Analizar la evolución biológica de los seres humanos.'], answer: 'Estudiar e interpretar las fuentes históricas para entender el pasado.', explanation: 'El objetivo principal de la historiografía es el estudio y la interpretación de las fuentes históricas, que incluye documentos escritos, testimonios orales y otros materiales, con el fin de comprender y explicar los eventos, procesos y contextos del pasado. Esto implica no solo registrar eventos, sino también analizar diferentes perspectivas y metodologías en la forma en que se ha escrito la historia a lo largo del tiempo.', multi: 'OFF', maxSelect: 1 },
+            { question: 'El __________ es considerado el primer homínido en utilizar herramientas de manera significativa, marcando el inicio de la Edad de Piedra.', options: ['Homo habilis', 'Homo sapiens', 'Homo erectus', 'Australopithecus'], answer: 'Homo habilis', explanation: 'Homo habilis es conocido por ser el primer homínido en usar herramientas de piedra, lo cual le otorgó su nombre que significa "hombre habilidoso".', multi: 'OFF', maxSelect: 1 },
+            { question: 'Organiza los siguientes periodos de la Prehistoria en el orden en que ocurrieron: <br> 1) Neolítico <br> 2) Paleolítico <br> 3) Edad de los Metales <br> 4) Mesolítico ', options: ['2, 4, 1, 3', '4, 2, 3, 1', '3, 1, 2, 4', '1, 2, 4, 3'], answer: '2, 4, 1, 3', explanation: 'Paleolítico (2): Este es el periodo más antiguo de la Prehistoria, que abarca desde la aparición de los primeros homínidos hasta aproximadamente el 10,000 a.C. Se caracteriza por el uso de herramientas de piedra simples y una economía basada en la caza y la recolección. <br> Mesolítico (4): Este periodo es una fase de transición entre el Paleolítico y el Neolítico, que tuvo lugar aproximadamente entre el 10,000 a.C. y el 5,000 a.C. Se caracteriza por el desarrollo de herramientas más avanzadas y una adaptación a cambios climáticos. <br> Neolítico (1): Este periodo comenzó alrededor del 10,000 a.C. y se caracteriza por la invención de la agricultura, la domesticación de animales y el establecimiento de asentamientos permanentes. <br> Edad de los Metales (3): Este periodo incluye la Edad del Cobre, la Edad del Bronce y la Edad del Hierro, y comenzó alrededor del 5,000 a.C., cuando se empezó a trabajar con metales para la fabricación de herramientas y armas.', multi: 'OFF', maxSelect: 1 },
+            { question: 'Ordena los siguientes acontecimientos evolutivos según su aparición cronológica: <br> 1) Desarrollo del lenguaje. <br> 2) Control del fuego. <br> 3) Uso de herramientas de piedra. <br> 4) Aparición de los primeros asentamientos permanentes.', options: ['2, 3, 1, 4', '3, 2, 1, 4', '1, 3, 4, 2', '4, 2, 3, 1'], answer: '3, 2, 1, 4', explanation: 'Uso de herramientas de piedra (3): Este es uno de los primeros hitos en la evolución humana, que comenzó en el Paleolítico, con el desarrollo de herramientas simples. <br> Control del fuego (2): El control del fuego se produjo posteriormente, permitiendo a los homínidos cocinar alimentos, calentarse y protegerse de depredadores.  <br> Desarrollo del lenguaje (1): El lenguaje se desarrolló como un medio de comunicación más complejo y eficiente, facilitando la cooperación y la transmisión de conocimiento. Aunque su evolución exacta es difícil de datar, generalmente se considera que surgió después del uso del fuego.  <br> Aparición de los primeros asentamientos permanentes (4): Este acontecimiento se produjo en el Neolítico, cuando los humanos comenzaron a practicar la agricultura y a establecerse en un lugar fijo..', multi: 'OFF', maxSelect: 1 },
+        ];
+
+        let state = {
+            currentMode: 'deber',
+            view: 'quiz_home',
+            studentName: '',
+            studentEmail: '',
+            activeQuestions: [],
+            currentQuestion: 0,
+            score: 0,
+            selectedAnswer: null,
+            isAnswerCorrect: null,
+            emailStatus: null,
+            emailAnalysis: null,
+            emailAnalysisMsg: ''
+        };
+
+        const disposableDomains = [
+            'tempmail.com','temp-mail.org','guerrillamail.com','10minutemail.com','mailinator.com',
+            'yopmail.com','throwawaymail.com','fakeinbox.com','trashmail.com','getnada.com',
+            'maildrop.cc','dispostable.com','sharklasers.com','guerrillamailblock.com'
+        ];
+        const trustedProviders = [
+            'gmail.com','googlemail.com','hotmail.com','hotmail.es','hotmail.co.uk','outlook.com',
+            'outlook.es','live.com','msn.com','yahoo.com','yahoo.es','icloud.com','me.com',
+            'protonmail.com','proton.me','aol.com','zoho.com','gmx.com','mail.com'
+        ];
+
+        function isValidEmailFormat(email) {
+            const re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+            return re.test(email) && email.length <= 254 && !email.includes('..') && !email.startsWith('.') && !email.endsWith('.');
+        }
+
+        function analyzeEmail(email) {
+            const lower = email.toLowerCase().trim();
+            if (!lower) {
+                return { valid: false, msg: 'Escribe un correo electrónico.' };
+            }
+            if (!isValidEmailFormat(lower)) {
+                return { valid: false, msg: 'Formato inválido. Revisa que tenga @ y un dominio correcto.' };
+            }
+            const domain = lower.split('@')[1];
+            if (!domain || domain.length < 3) {
+                return { valid: false, msg: 'Dominio incompleto o inválido.' };
+            }
+            if (disposableDomains.some(d => domain === d || domain.endsWith('.' + d))) {
+                return { valid: false, msg: 'Correo temporal / desechable detectado. Usa un correo real.' };
+            }
+            const isTrusted = trustedProviders.some(p => domain === p);
+            const hasGoodTld = /\.(com|es|net|org|edu|gov|mx|ar|co|uk|de|fr|it|pt|br|cl)$/i.test(domain);
+            if (!hasGoodTld && !isTrusted) {
+                return { valid: false, msg: 'Dominio poco común o sospechoso. Usa Gmail, Hotmail/Outlook, Yahoo, etc.' };
+            }
+            let analysisText = '';
+            if (domain.includes('hotmail') || domain.includes('outlook') || domain.includes('live.com') || domain.includes('msn.com')) {
+                analysisText = 'Análisis: proveedor Microsoft (Hotmail/Outlook) detectado · formato correcto · dominio legítimo';
+            } else if (domain.includes('gmail') || domain.includes('googlemail')) {
+                analysisText = 'Análisis: proveedor Google (Gmail) detectado · formato correcto · dominio legítimo';
+            } else if (isTrusted) {
+                analysisText = 'Análisis: proveedor conocido · formato correcto · dominio legítimo';
+            } else {
+                analysisText = 'Análisis: formato válido · dominio con TLD estándar · no se detectaron patrones de correo temporal';
+            }
+            return { valid: true, msg: analysisText };
+        }
+
+        function showSection(section, btn) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const app = document.getElementById('app');
+            if (section === 'pdf') {
+                app.innerHTML = `<div class="animate-fade-in"><h2 class="text-xl font-bold mb-4">📄 Pizarra Virtual</h2><div class="iframe-container"><iframe src="${DRIVE_PDF_URL}" width="100%" height="100%"></iframe></div></div>`;
+            } else if (section === 'video') {
+                app.innerHTML = `<div class="animate-fade-in"><h2 class="text-xl font-bold mb-4">🎥 Video Clase</h2><div class="iframe-container"><iframe src="${DRIVE_VIDEO_URL}" width="100%" height="100%"></iframe></div></div>`;
+            }
+        }
+
+        function prepQuiz(mode, btn) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            state = {
+                currentMode: mode,
+                view: 'quiz_home',
+                studentName: '',
+                studentEmail: '',
+                activeQuestions: [],
+                currentQuestion: 0,
+                score: 0,
+                selectedAnswer: null,
+                isAnswerCorrect: null,
+                emailStatus: null,
+                emailAnalysis: null,
+                emailAnalysisMsg: ''
+            };
+            render();
+        }
+
+        function startQuiz() {
+            if (state.currentMode === 'deber') {
+                state.activeQuestions = [...quizData];
+            } else if (state.currentMode === 'evaluacion') {
+                state.activeQuestions = [...quizData]
+                    .sort(() => 0.5 - Math.random())
+                    .slice(0, 20);
+            } else if (state.currentMode === 'extra') {
+                state.activeQuestions = [...quizDataExtra];
+            }
+            state.view = 'name_input';
+            state.emailAnalysis = null;
+            state.emailAnalysisMsg = '';
+            render();
+        }
+
+        function onEmailInput() {
+            const e = document.getElementById('email-in');
+            if (!e) return;
+            const val = e.value.trim();
+            if (val.length < 5) {
+                state.emailAnalysis = null;
+                state.emailAnalysisMsg = '';
+                updateEmailUI();
+                return;
+            }
+            state.emailAnalysis = 'checking';
+            state.emailAnalysisMsg = 'Analizando correo…';
+            updateEmailUI();
+            clearTimeout(window._emailCheckTimer);
+            window._emailCheckTimer = setTimeout(() => {
+                const result = analyzeEmail(val);
+                state.emailAnalysis = result.valid ? 'valid' : 'invalid';
+                state.emailAnalysisMsg = result.msg;
+                updateEmailUI();
+            }, 600);
+        }
+
+        function updateEmailUI() {
+            const feedback = document.getElementById('email-feedback');
+            const analysis = document.getElementById('email-analysis');
+            const input = document.getElementById('email-in');
+            if (!feedback || !analysis || !input) return;
+            if (state.emailAnalysis === 'checking') {
+                feedback.innerHTML = `<span class="text-slate-500 text-sm flex items-center gap-2"><span class="dot-pulse">●</span> Verificando…</span>`;
+                analysis.innerHTML = `<p class="text-xs text-slate-400 mt-1">${state.emailAnalysisMsg}</p>`;
+                input.classList.remove('border-red-400', 'border-emerald-400');
+                input.classList.add('border-slate-300');
+            } else if (state.emailAnalysis === 'invalid') {
+                feedback.innerHTML = `<span class="text-red-600 text-sm font-semibold">✗ Correo no válido o inexistente</span>`;
+                analysis.innerHTML = `<p class="text-xs text-red-500/80 mt-1">${state.emailAnalysisMsg}</p>`;
+                input.classList.remove('border-emerald-400', 'border-slate-300');
+                input.classList.add('border-red-400');
+            } else if (state.emailAnalysis === 'valid') {
+                feedback.innerHTML = `<span class="text-emerald-600 text-sm font-semibold">✓ Correo aceptado</span>`;
+                analysis.innerHTML = `<p class="text-xs text-emerald-600/80 mt-1">${state.emailAnalysisMsg}</p>`;
+                input.classList.remove('border-red-400', 'border-slate-300');
+                input.classList.add('border-emerald-400');
+            } else {
+                feedback.innerHTML = '';
+                analysis.innerHTML = '';
+                input.classList.remove('border-red-400', 'border-emerald-400');
+                input.classList.add('border-slate-300');
+            }
+        }
+
+        function validaDatos() {
+            const n = document.getElementById('name-in').value.trim();
+            const e = document.getElementById('email-in').value.trim();
+            if (n.length <= 2) {
+                alert("Ingresa nombre completo (mínimo 3 caracteres).");
+                return;
+            }
+            const result = analyzeEmail(e);
+            state.emailAnalysis = result.valid ? 'valid' : 'invalid';
+            state.emailAnalysisMsg = result.msg;
+            updateEmailUI();
+            if (!result.valid) return;
+            state.studentName = n;
+            state.studentEmail = e;
+            state.view = 'playing';
+            render();
+        }
+
+        // ---------- LÓGICA DE RESPUESTAS (single + multi) ----------
+        function isMultiQuestion(q) {
+            return q.multi === 'ON';
+        }
+
+        function arraysEqual(a, b) {
+            if (!Array.isArray(a) || !Array.isArray(b)) return false;
+            if (a.length !== b.length) return false;
+            const sa = [...a].sort();
+            const sb = [...b].sort();
+            return sa.every((v, i) => v === sb[i]);
+        }
+
+        function handleAnswer(option) {
+            // Ya se comprobó la respuesta → no permitir más cambios
+            if (state.isAnswerCorrect !== null) return;
+
+            const currentQ = state.activeQuestions[state.currentQuestion];
+
+            if (isMultiQuestion(currentQ)) {
+                // Selección múltiple: toggle
+                let selected = Array.isArray(state.selectedAnswer) ? [...state.selectedAnswer] : [];
+                const idx = selected.indexOf(option);
+
+                if (idx > -1) {
+                    selected.splice(idx, 1); // deseleccionar
+                } else {
+                    if (selected.length >= currentQ.maxSelect) return; // límite alcanzado
+                    selected.push(option);
+                }
+                state.selectedAnswer = selected;
+                render();
+            } else {
+                // Selección simple (incluye preguntas V/F)
+                if (state.selectedAnswer !== null) return;
+                state.selectedAnswer = option;
+                state.isAnswerCorrect = (option === currentQ.answer);
+                if (state.isAnswerCorrect) state.score++;
+                render();
+                if (state.isAnswerCorrect) {
+                    setTimeout(() => nextQuestion(), 1000);
+                }
+            }
+        }
+
+        function checkMultiAnswer() {
+            if (state.isAnswerCorrect !== null) return;
+
+            const currentQ = state.activeQuestions[state.currentQuestion];
+            if (!isMultiQuestion(currentQ)) return;
+
+            const selected = Array.isArray(state.selectedAnswer) ? state.selectedAnswer : [];
+            if (selected.length === 0) return;
+
+            // Comparación exacta (mismo conjunto de respuestas)
+            const correctAnswers = Array.isArray(currentQ.answer) ? currentQ.answer : [currentQ.answer];
+            state.isAnswerCorrect = arraysEqual(selected, correctAnswers);
+
+            if (state.isAnswerCorrect) state.score++;
+            render();
+
+            if (state.isAnswerCorrect) {
+                setTimeout(() => nextQuestion(), 1000);
+            }
+        }
+
+        function nextQuestion() {
+            if (state.currentQuestion + 1 < state.activeQuestions.length) {
+                state.currentQuestion++;
+                state.selectedAnswer = null;
+                state.isAnswerCorrect = null;
+                render();
+            } else {
+                state.view = 'results';
+                render();
+                enviarCorreo();
+            }
+        }
+
+        function enviarCorreo() {
+            if (!state.studentEmail) return;
+            state.emailStatus = 'sending';
+            render();
+            const scorePerc = Math.round((state.score / state.activeQuestions.length) * 100);
+            const totalQ = state.activeQuestions.length;
+            let imageUrl = '';
+            let mensaje = '';
+            if (scorePerc >= 90) {
+                imageUrl = 'https://img.icons8.com/color/128/medal2.png';
+                mensaje = `¡Excelente trabajo, ${state.studentName}! Obtuviste un resultado sobresaliente.`;
+            } else if (scorePerc >= 70) {
+                imageUrl = 'https://img.icons8.com/color/128/diploma.png';
+                mensaje = `¡Muy bien, ${state.studentName}! Has aprobado con un buen resultado.`;
+            } else if (scorePerc >= 50) {
+                imageUrl = 'https://img.icons8.com/color/128/ok.png';
+                mensaje = `Buen esfuerzo, ${state.studentName}. Sigue practicando para mejorar.`;
+            } else {
+                imageUrl = 'https://img.icons8.com/color/128/error.png';
+                mensaje = `Ánimo, ${state.studentName}. Revisa el material y vuelve a intentarlo.`;
+            }
+            const params = {
+                to_name: state.studentName,
+                to_email: state.studentEmail,
+                score: scorePerc,
+                correct_answers: state.score,
+                total_questions: totalQ,
+                mode_name: state.currentMode.toUpperCase(),
+                image_url: imageUrl,
+                mensaje: mensaje,
+                fecha: new Date().toLocaleDateString('es-ES', { 
+                    year: 'numeric', month: 'long', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                })
+            };
+            emailjs.send("service_dhvsi72", "template_cy74x9h", params)
+                .then(() => { 
+                    state.emailStatus = 'success'; 
+                    render(); 
+                })
+                .catch((err) => { 
+                    console.error('Error EmailJS:', err);
+                    state.emailStatus = 'error'; 
+                    render(); 
+                });
+        }
+
+        function render() {
+            const app = document.getElementById('app');
+            
+            let modeTitle = '';
+            let modeDesc = '';
+            if (state.currentMode === 'deber') {
+                modeTitle = '📚 Practica';
+                modeDesc = 'Resuelve las 50 preguntas del banco en orden.';
+            } else if (state.currentMode === 'evaluacion') {
+                modeTitle = '📝 Repaso';
+                modeDesc = 'Prueba de 20 preguntas seleccionadas al azar.';
+            } else if (state.currentMode === 'extra') {
+                modeTitle = '📊 Evaluación';
+                modeDesc = 'Resuelve las 16 preguntas de la Evaluación.';
+            }
+            
+            if (state.view === 'quiz_home') {
+                app.innerHTML = `
+                <div class="text-center py-16 animate-fade-in bg-white rounded-[3rem] shadow-xl border">
+                    <h2 class="text-4xl font-black text-slate-800 mb-2">${modeTitle}</h2>
+                    <p class="text-slate-500 mb-8 text-lg">${modeDesc}</p>
+                    <button onclick="startQuiz()" class="bg-emerald-600 text-white px-12 py-5 rounded-2xl font-black text-xl hover:bg-emerald-700 transition-all">
+                        INICIAR
+                    </button>
+                </div>`;
+            }
+
+            if (state.view === 'name_input') {
+                app.innerHTML = `
+                <div class="max-w-md mx-auto bg-white p-10 rounded-[2.5rem] shadow-2xl animate-fade-in">
+                    <h2 class="text-2xl font-black mb-6 text-center">Registro de Estudiante</h2>
+                    <input id="name-in" type="text" placeholder="Nombre y Apellido completo" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl mb-4 focus:border-emerald-500 outline-none">
+                    
+                    <div class="relative mb-1">
+                        <input id="email-in" type="email" placeholder="Correo para recibir nota (Gmail, Hotmail…)" 
+                               class="w-full p-4 bg-slate-50 border border-slate-300 rounded-xl focus:border-emerald-500 outline-none transition-colors"
+                               oninput="onEmailInput()" onblur="onEmailInput()">
+                    </div>
+                    
+                    <div id="email-feedback" class="min-h-[22px] mb-1"></div>
+                    <div id="email-analysis" class="mb-5"></div>
+                    
+                    <button onclick="validaDatos()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-slate-800 transition-all">
+                        ENTRAR AL TEST
+                    </button>
+                    <p class="text-center text-[11px] text-slate-400 mt-4">Se verifica formato y se descartan correos temporales. No se envía nada hasta terminar el test.</p>
+                </div>`;
+                setTimeout(updateEmailUI, 50);
+            }
+
+            if (state.view === 'playing') {
+                const q = state.activeQuestions[state.currentQuestion];
+                const progress = ((state.currentQuestion + 1) / state.activeQuestions.length) * 100;
+                const multi = isMultiQuestion(q);
+                const selected = multi
+                    ? (Array.isArray(state.selectedAnswer) ? state.selectedAnswer : [])
+                    : (state.selectedAnswer ? [state.selectedAnswer] : []);
+
+                // Indicador de selección múltiple (CORREGIDO)
+                const multiHint = multi
+                    ? `<p class="text-sm text-sky-600 font-semibold mb-4">
+                         Selección múltiple · elige ${q.maxSelect} respuesta${q.maxSelect > 1 ? 's' : ''}
+                         ${selected.length > 0 ? `(${selected.length}/${q.maxSelect})` : ''}
+                       </p>`
+                    : '';
+
+                app.innerHTML = `
+                <div class="animate-fade-in">
+                    <div class="flex justify-between items-center mb-6 px-4">
+                        <span class="font-black text-emerald-600">${state.currentQuestion + 1} / ${state.activeQuestions.length}</span>
+                        <div class="w-48 bg-slate-200 h-2 rounded-full overflow-hidden">
+                            <div class="bg-emerald-500 h-full transition-all" style="width:${progress}%"></div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl border">
+                        <h2 class="text-2xl font-bold text-slate-800 mb-2 leading-tight">${q.question}</h2>
+                        ${multiHint}
+                        <div class="grid gap-3">
+                            ${q.options.map(opt => {
+                                let style = "border-slate-100 bg-slate-50 hover:border-emerald-200";
+                                const isSelected = selected.includes(opt);
+
+                                if (state.isAnswerCorrect !== null) {
+                                    // Ya se comprobó → mostrar feedback final
+                                    if (multi) {
+                                        const correctSet = Array.isArray(q.answer) ? q.answer : [q.answer];
+                                        if (correctSet.includes(opt) && isSelected) {
+                                            style = "border-emerald-500 bg-emerald-100 text-emerald-800";
+                                        } else if (isSelected && !correctSet.includes(opt)) {
+                                            style = "border-red-500 bg-red-100 text-red-800";
+                                        } else if (correctSet.includes(opt) && !isSelected) {
+                                            style = "border-emerald-300 bg-emerald-50 text-emerald-700";
+                                        }
+                                    } else {
+                                        // Selección simple (incluye V/F) - muestra la correcta en verde
+                                        if (opt === q.answer) {
+                                            style = "border-emerald-500 bg-emerald-100 text-emerald-800";
+                                        } else if (isSelected) {
+                                            style = "border-red-500 bg-red-100 text-red-800";
+                                        }
+                                    }
+                                } else if (isSelected) {
+                                    // Selección en curso
+                                    if (multi) {
+                                        style = "border-sky-400 bg-sky-100 text-sky-800";
+                                    } else {
+                                        style = "border-emerald-500 bg-emerald-100 text-emerald-800";
+                                    }
+                                }
+
+                                // Escapar comillas y barras para el atributo onclick
+                                const safeOpt = opt.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
+                                return `<button onclick="handleAnswer('${safeOpt}')" 
+                                            class="p-5 text-left border-2 rounded-xl font-bold transition-all ${style}">
+                                            ${opt}
+                                        </button>`;
+                            }).join('')}
+                        </div>
+
+                        ${/* Botón comprobar (solo multi y aún no comprobado) - CORREGIDO */
+                          multi && state.isAnswerCorrect === null ? `
+                            <button onclick="checkMultiAnswer()" 
+                                class="mt-6 w-full py-4 rounded-xl font-bold transition-all
+                                ${selected.length === q.maxSelect 
+                                    ? 'bg-sky-600 text-white hover:bg-sky-700' 
+                                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'}"
+                                ${selected.length !== q.maxSelect ? 'disabled' : ''}>
+                                Comprobar respuesta (${selected.length}/${q.maxSelect})
+                            </button>
+                          ` : ''}
+
+                        ${/* Explicación + siguiente (cuando falló) */
+                          state.selectedAnswer !== null && state.isAnswerCorrect === false ? `
+                            <div class="mt-6 p-5 bg-amber-50 border border-amber-200 rounded-xl">
+                                <p class="font-bold text-amber-800 mb-2">Explicación:</p>
+                                <p class="text-slate-700">${q.explanation}</p>
+                            </div>
+                            <button onclick="nextQuestion()" class="mt-6 w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-700 transition-all">
+                                Siguiente pregunta
+                            </button>
+                          ` : ''}
+                    </div>
+                </div>`;
+            }
+
+            if (state.view === 'results') {
+                const scorePerc = Math.round((state.score / state.activeQuestions.length) * 100);
+                app.innerHTML = `
+                <div class="max-w-md mx-auto text-center animate-fade-in bg-white p-12 rounded-[3rem] shadow-2xl">
+                    <h2 class="text-2xl font-black mb-2">${state.studentName}</h2>
+                    <p class="text-slate-400 uppercase text-xs font-bold mb-6">${state.currentMode}</p>
+                    <div class="text-7xl font-black text-emerald-600 mb-4">${scorePerc}%</div>
+                    <p class="text-lg font-bold text-slate-700 mb-10">${state.score} / ${state.activeQuestions.length} correctas</p>
+                    <button onclick="location.reload()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold">VOLVER AL INICIO</button> 
+                    <p class="mt-6 text-xs font-bold text-slate-400"> 
+                        ${state.emailStatus === 'success' ? '✅ Nota e imagen enviadas al correo' : 
+                          state.emailStatus === 'error' ? '⚠️ Error al enviar nota e imagen' : 
+                          '⏳ Enviando nota e imagen al correo...'}
+                    </p>
+                </div>`;
+            }
+        }
+        render();
+    </script>
+</body>
+</html>
