@@ -498,7 +498,7 @@
                 // Indicador de selección múltiple (CORREGIDO)
                 const multiHint = multi
                     ? `<p class="text-sm text-sky-600 font-semibold mb-4">
-                         Selección múltiple · elige ${q.maxSelect} respuesta${q.maxSelect > 1 ? 's' : ''}
+                         Selección múltiple · elige q.maxSelectrespuesta{q.maxSelect > 1 ? 's' : ''}
                          ${selected.length > 0 ? `(${selected.length}/${q.maxSelect})` : ''}
                        </p>`
                     : '';
@@ -565,7 +565,7 @@
                                     ? 'bg-sky-600 text-white hover:bg-sky-700' 
                                     : 'bg-slate-200 text-slate-400 cursor-not-allowed'}"
                                 ${selected.length !== q.maxSelect ? 'disabled' : ''}>
-                                Comprobar respuesta (${selected.length}/${q.maxSelect})
+                                Comprobar respuesta (selected.length/{q.maxSelect})
                             </button>
                           ` : ''}
 
@@ -604,3 +604,5 @@
     </script>
 </body>
 </html>
+
+
